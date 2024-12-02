@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+//facilita muito a manipulação dos dados no banco de dados, tornando o processo mais simples e seguro.
+
+datasource db {
+  provider = "postgresql"
+  url      = env("CONNECTION_STRING")
+}
+
+model usuario{
+  nome String
+  email String @unique
+  password String
+  cod_usuario Int @id @default(autoincrement())
+  questoes questao[]
+}
+
+model disciplina{
+  cod_disc Int @id @default(autoincrement())
+  nome_disc String
+  assuntos assunto[]
+}
+
+model assunto{
+  cod_assunto Int @id @default(autoincrement())
+  nome_assunto String
+  cod_disc Int
+  disciplina disciplina @relation(fields: [cod_disc],references: [cod_disc])
+  questoes questao[] @relation("QuestaoAssunto")
+  provas prova[] @relation("ProvaAssunto")
+
+}
+model questao{
+  cod_questao Int @id @default(autoincrement())
+  enunciado String
+  resposta_esperada String
+  cod_usuario Int
+  cod_assunto Int
+  usuario usuario @relation(fields: [cod_usuario], references: [cod_usuario])
+  assuntos assunto[] @relation("QuestaoAssunto")
+  provas prova[] @relation("QuestaoProva")
+}
+
+model prova {
+  cod_prova Int @id @default(autoincrement())
+  nome_prova String
+  data DateTime @default(now())
+  assuntos assunto[] @relation("ProvaAssunto")
+  questoes questao[] @relation("QuestaoProva")
+  cabecalho cabecalho? @relation("ProvaCabecalho") 
+}
+
+
+model cabecalho {
+  cod_cabecalho Int @id @default(autoincrement())
+  cod_prova Int @unique 
+  nome_cabecalho String
+  instituicao String
+  data_prova DateTime @default(now()) 
+  prova prova @relation("ProvaCabecalho", fields: [cod_prova], references: [cod_prova]) // Relacionamento com prova
+  imagem String?
+}
+
+
+

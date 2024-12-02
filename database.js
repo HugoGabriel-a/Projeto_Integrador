@@ -3,7 +3,6 @@ async function connect(){
     if(global.connection)
         return global.connection.connect()
 
-
     const {Pool}=require("pg");
     const pool= new Pool({
         connectionString:process.env.CONNECTION_STRING
@@ -33,10 +32,6 @@ async function select_usuario_by_cod_usuario(cod_usuario) {
     return res.rows
 }
 
-// async function insert_into_usuario(ususario){
-//     const user= await connect()
-//     const cod_sql= await user.query("INSERT INTO usuario(nome,email,password) VALUES ($1,$2,$3)",[ususario.nome,ususario.email,ususario.password] )
-// }
 async function insert_into_usuario(usuario){
     const user = await connect();
     return await user.query('INSERT INTO usuario(nome,email,password) VALUES ($1,$2,$3);', [usuario.nome, usuario.email, usuario.password]);
